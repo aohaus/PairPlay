@@ -274,7 +274,7 @@ details[open] > summary::after{content:" ▴"}
 </head>
 <body>
 <header>
-  <h1>PairPlay <span style="font-size:13px;color:#94a3b8;font-weight:600;">Wizard v1.3.14 A4 Modal</span></h1>
+  <h1>PairPlay <span style="font-size:13px;color:#94a3b8;font-weight:600;">Wizard v1.3.14 - integrated </span></h1>
 <button class="ghost" type="button" id="btnHelp" style="margin-left:auto">? Help</button>
   <button class="ghost" type="button" id="btnExportA4">Export A4</button>
 </header>
@@ -2490,7 +2490,7 @@ function buildRallyScoreUrl(matchNo, courtLabel, compact, numberMap){
   const teamANo = (numberMap[a] || "") + "-" + (numberMap[b] || "");
   const teamBNo = (numberMap[c] || "") + "-" + (numberMap[d] || "");
 
-  const base = "RallyScore405_PP_Link_inlineNames_changeCourtReset.html";
+  const base = "./RallyScore/index.html";
   const params = new URLSearchParams();
   params.set("match", String(matchNo));
   if(courtLabel) params.set("court", String(courtLabel));
