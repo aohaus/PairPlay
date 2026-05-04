@@ -2490,7 +2490,7 @@ function buildRallyScoreUrl(matchNo, courtLabel, compact, numberMap){
   const teamANo = (numberMap[a] || "") + "-" + (numberMap[b] || "");
   const teamBNo = (numberMap[c] || "") + "-" + (numberMap[d] || "");
 
-  const base = "./RallyScore/index.html";
+  const base = "../RallyScore/index.html";
   const params = new URLSearchParams();
   params.set("match", String(matchNo));
   if(courtLabel) params.set("court", String(courtLabel));
