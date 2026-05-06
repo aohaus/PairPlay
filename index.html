@@ -257,11 +257,195 @@ details[open] > summary::after{content:" ▴"}
 }
 .rsBtn:hover{background:#1f2937}
 
+
+/* =========================================================
+   PairPlay typography-only refresh
+   - Font / weight / spacing only
+   - No color palette changes
+   - No functional IDs or JS changes
+   ========================================================= */
+:root{
+  --font-ui: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Display",
+             "SF Pro Text", "Inter", "Segoe UI", Roboto, "Helvetica Neue",
+             "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+               "Liberation Mono", "Courier New", monospace;
+}
+
+body{
+  font-family:var(--font-ui);
+  font-feature-settings:"kern" 1, "palt" 1;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  letter-spacing:-0.01em;
+}
+
+header h1{
+  font-size:22px;
+  font-weight:850;
+  letter-spacing:-0.035em;
+  line-height:1.12;
+}
+
+header h1 span{
+  font-weight:700!important;
+  letter-spacing:-0.015em;
+}
+
+.introTitle{
+  font-size:40px;
+  font-weight:900;
+  letter-spacing:-0.055em;
+  line-height:1.03;
+}
+
+.introSubtitle{
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:-0.025em;
+  line-height:1.22;
+}
+
+.introLead{
+  font-size:15.5px;
+  line-height:1.65;
+  letter-spacing:-0.015em;
+}
+
+.stepHeader h2{
+  font-size:24px;
+  font-weight:900;
+  letter-spacing:-0.045em;
+  line-height:1.08;
+}
+
+.stepPill{
+  font-weight:850;
+  letter-spacing:-0.02em;
+}
+
+label,
+.small,
+.toggleRow .labelText{
+  letter-spacing:-0.012em;
+}
+
+button,
+button.secondary,
+button.ghost,
+label.ghost{
+  font-family:var(--font-ui);
+  font-weight:800;
+  letter-spacing:-0.018em;
+}
+
+input{
+  font-family:var(--font-ui);
+  font-weight:650;
+  letter-spacing:-0.012em;
+}
+
+.chk span[data-name-for]{
+  font-weight:750;
+  letter-spacing:-0.02em;
+}
+
+.selectedSummary{
+  font-weight:700;
+  letter-spacing:-0.02em;
+}
+
+.sectionTitle{
+  font-size:15px;
+  font-weight:850;
+  letter-spacing:-0.03em;
+}
+
+.histitem .title{
+  font-weight:900;
+  letter-spacing:-0.03em;
+}
+
+.histitem .meta{
+  letter-spacing:-0.01em;
+}
+
+.introItem,
+.flowStep{
+  font-weight:800;
+  letter-spacing:-0.025em;
+}
+
+.mono,
+pre{
+  font-family:var(--font-mono);
+  letter-spacing:-0.015em;
+}
+
+table{
+  font-size:14px;
+}
+
+th{
+  font-weight:850;
+  letter-spacing:-0.02em;
+}
+
+td{
+  letter-spacing:-0.012em;
+}
+
+.rsBtn{
+  font-family:var(--font-ui);
+  font-weight:850;
+  letter-spacing:-0.02em;
+}
+
+.modalCard h3{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:-0.045em;
+  line-height:1.1;
+}
+
+.footer{
+  letter-spacing:-0.01em;
+}
+
+/* A4 export typography only */
+@media print{
+  body{
+    font-family:var(--font-ui);
+  }
+}
+
+@media (max-width:520px){
+  header h1{
+    font-size:21px;
+  }
+  .introTitle{
+    font-size:34px;
+  }
+  .stepHeader h2{
+    font-size:23px;
+  }
+}
+
+
+/* --- Title cleanup: header is the only title area --- */
+.introHero{
+  padding-top:4px;
+}
+.introLead{
+  margin-top:0;
+  font-size:16px;
+}
+
 </style>
 </head>
 <body>
 <header>
-  <h1>PairPlay <span style="font-size:13px;color:#94a3b8;font-weight:600;">Wizard v1.3.13 Public Roster Loader</span></h1>
+  <h1>PairPlay <span style="font-size:13px;color:#94a3b8;font-weight:600;">Smart Doubles Scheduler</span></h1>
 <button class="ghost" type="button" id="btnHelp" style="margin-left:auto">? Help</button>
   <button class="ghost" type="button" id="btnExportA4">Export A4</button>
 </header>
@@ -277,9 +461,7 @@ details[open] > summary::after{content:" ▴"}
 
   <section class="card wizardIntro active" id="introScreen">
     <div class="introHero">
-      <h2 class="introTitle">PairPlay</h2>
-      <div class="introSubtitle">Smart Doubles Scheduler</div>
-      <p class="introLead">
+<p class="introLead">
         Create fair and balanced badminton doubles matches in seconds.
         PairPlay helps avoid consecutive rests and balance play time.
       </p>
