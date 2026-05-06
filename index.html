@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <link rel="apple-touch-icon" sizes="180x180"
-      href="/Hub/icons/pairplay-icon-180.png">
+      href="/RallyHub/icons/pairplay-icon-180.png">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="PairPlay">
 
-<title>PairPlay Wizard v1.3.15 | Doubles Match Scheduler</title>
+<title>PairPlay Wizard | Doubles Match Scheduler</title>
 <style>
   :root{--bg:#0f172a;--panel:#111827;--ink:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--line:#1f2937;--warn:#fbbf24}
   *{box-sizing:border-box}
@@ -242,39 +242,26 @@ details[open] > summary::after{content:" ▴"}
 }
 
 
-
-/* --- RallyScore link button (isolated) --- */
-.rallyOpenWrap{margin-top:8px;text-align:center}
-.rallyOpenBtn{
-  background:#1d4ed8;
-  color:#eff6ff;
-  border:1px solid rgba(147,197,253,.55);
-  padding:7px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-  line-height:1;
-  cursor:pointer;
+/* --- RallyScore link --- */
+.rsBtn{
+  display:inline-block;
+  margin-top:6px;
+  padding:4px 7px;
+  border-radius:8px;
+  border:1px solid #334155;
+  color:#cbd5e1;
+  background:transparent;
+  font-size:11px;
+  font-weight:800;
+  text-decoration:none;
 }
-.rallyOpenBtn:active{transform:translateY(1px)}
-@media (max-width:520px){.rallyOpenBtn{width:100%;padding:10px 12px}}
-
-
-/* --- A4 Export modal (view-only, PWA safe) --- */
-#a4Modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;padding:12px;overflow:auto}
-#a4Modal.active{display:block}
-.a4ModalShell{max-width:1180px;margin:0 auto;background:#0f172a;border:1px solid #334155;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45)}
-.a4ModalBar{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#111827;border-bottom:1px solid #334155;padding:10px 12px}
-.a4ModalTitle{font-size:14px;font-weight:900;color:#e5e7eb}
-.a4ModalClose{background:#334155!important;color:#e2e8f0!important;border:1px solid #475569!important}
-#a4Frame{display:block;width:100%;height:calc(100vh - 96px);border:0;background:#fff}
-@media (max-width:520px){#a4Modal{padding:8px}.a4ModalBar{padding:10px}#a4Frame{height:calc(100vh - 88px)}}
+.rsBtn:hover{background:#1f2937}
 
 </style>
 </head>
 <body>
 <header>
-  <h1>PairPlay <span style="font-size:13px;color:#94a3b8;font-weight:600;">Wizard v1.3.14 - integrated </span></h1>
+  <h1>PairPlay <span style="font-size:13px;color:#94a3b8;font-weight:600;">Wizard v1.3.13 Public Roster Loader</span></h1>
 <button class="ghost" type="button" id="btnHelp" style="margin-left:auto">? Help</button>
   <button class="ghost" type="button" id="btnExportA4">Export A4</button>
 </header>
@@ -330,12 +317,18 @@ details[open] > summary::after{content:" ▴"}
     </div>
 
     <div class="actions" style="margin-top:0">
+      <label class="ghost" id="loadPlayersLabel" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+        Load players list
+        <input id="filePlayersLoad" type="file" accept=".txt,text/plain,.csv,text/csv,.html,text/html" style="display:none">
+      </label>
+      <button class="secondary" type="button" id="btnUseSamplePlayers">Use P1-P24</button>
       <button class="secondary" type="button" id="btnAll">Select all</button>
       <button class="secondary" type="button" id="btnNone">Clear checks</button>
     </div>
 
     <div style="margin-top:12px">
       <label>Players (checkbox select)</label>
+      <div class="small" id="playersLoadHint" style="margin-top:4px">Load a private players list to start. Public template contains no names.</div>
       <div id="playerChecks" class="chkgrid"></div>
     </div>
 
@@ -480,21 +473,9 @@ details[open] > summary::after{content:" ▴"}
   </div>
 </div>
 
-<div id="a4Modal" aria-hidden="true">
-  <div class="a4ModalShell" role="dialog" aria-modal="true" aria-labelledby="a4ModalTitle">
-    <div class="a4ModalBar">
-      <div id="a4ModalTitle" class="a4ModalTitle">A4 Export Preview</div>
-      <button class="a4ModalClose" type="button" id="btnCloseA4Modal">← Close</button>
-    </div>
-    <iframe id="a4Frame" title="PairPlay A4 Export Preview"></iframe>
-  </div>
-</div>
-
 <script>
 /** --- Roster (added ハリイ) --- */
-const PLAYERS = [
-  "ハヤト", "ヨウコ", "タイラ", "オウタ", "ラクト", "コウイチ", "チエ", "マサシ", "マオ", "モモカ", "タイヨウ", "シホ", "ケンジ", "コウタロウ", "サトタロウ", "カオル", "ユウ", "クミ", "ハリイ", "タケジ", "カナト", "ゲストA", "ゲストB", "ゲストC"
-];
+let PLAYERS = [];
 
 let generateCount = 0;
 let history = []; // newest first, max 10
@@ -611,6 +592,22 @@ function pickResters(players, needRest, roundIndex, lastRest, restCount, wConsec
   return resters;
 }
 
+
+function rallyScoreUrl(a,b,c,d){
+  const teamA = a + "-" + b;
+  const teamB = c + "-" + d;
+  const params = new URLSearchParams({
+    source: "PairPlay",
+    teamA: teamA,
+    teamB: teamB,
+    a1: a,
+    a2: b,
+    b1: c,
+    b2: d
+  });
+  return "/RallyScore/index.html?" + params.toString();
+}
+
 /** Build courts from playing players while loosely avoiding pair repeats */
 function buildCourts(playing, courtCount, usedPairs, pairCount){
   let pool = shuffle(playing.slice());
@@ -646,9 +643,11 @@ function buildCourts(playing, courtCount, usedPairs, pairCount){
       pairCount.set(p2,(pairCount.get(p2)||0)+1);
 
       const numMap = getPlayerNumberMap();
+      const rsUrl = rallyScoreUrl(a,b,c1,d);
       cell='<span class="mono">'+(numMap[a]||'')+'-'+(numMap[b]||'')+'</span><br><span class="small">('+a+'-'+b+')</span>'+
            '<br>vs<br>'+
-           '<span class="mono">'+(numMap[c1]||'')+'-'+(numMap[d]||'')+'</span><br><span class="small">('+c1+'-'+d+')</span>';
+           '<span class="mono">'+(numMap[c1]||'')+'-'+(numMap[d]||'')+'</span><br><span class="small">('+c1+'-'+d+')</span>'+
+           '<br><a class="rsBtn" href="'+rsUrl+'" target="_blank" rel="noopener">Open in RallyScore</a>';
 
       compact = [PLAYERS.indexOf(a), PLAYERS.indexOf(b), PLAYERS.indexOf(c1), PLAYERS.indexOf(d)];
     }
@@ -856,7 +855,6 @@ function generateNew(){
 
   const capacity = 4*courtCount;
   const courtLabels = getCourtLabels(courtCount);
-  const numMapForRally = getPlayerNumberMap();
   if(players.length < capacity){
     warn.textContent = "Players ("+players.length+") are fewer than required for "+courtCount+" courts (need "+capacity+"). Extra courts will be empty.";
   }
@@ -905,10 +903,7 @@ function generateNew(){
       ? '<div class="rest"><b>Rest:</b> '+restList.join(", ")+'</div>'
       : '<div class="rest"><b>Rest:</b> —</div>';
 
-    tr.innerHTML = '<td><div>Match '+(r+1)+'</div>'+restHtml+'</td>' + cells.map(function(x, ci){
-      const rallyUrl = buildRallyScoreUrl(r+1, courtLabels[ci], built.matchData[ci], numMapForRally);
-      return '<td>'+x+rallyOpenButtonHtml(rallyUrl)+'</td>';
-    }).join("");
+    tr.innerHTML = '<td><div>Match '+(r+1)+'</div>'+restHtml+'</td>' + cells.map(x=>'<td>'+x+'</td>').join("");
     tbody.appendChild(tr);
   }
   table.appendChild(tbody);
@@ -992,11 +987,97 @@ function exportHtmlWithState(){
   URL.revokeObjectURL(url);
 }
 
+
+function parsePlayersFromText(text){
+  if(!text) return [];
+  let raw = text.replace(/\r/g, "\n");
+  // Support TXT/CSV: one name per line, comma-separated, or numbered lines.
+  const parts = raw
+    .split(/[\n,]+/)
+    .map(function(x){
+      return x
+        .replace(/^\s*\d+\s*[\.、\):：-]?\s*/, "")
+        .replace(/^\s*[-*]\s*/, "")
+        .trim();
+    })
+    .filter(Boolean);
+
+  const seen = new Set();
+  const players = [];
+  parts.forEach(function(p){
+    if(!seen.has(p)){
+      seen.add(p);
+      players.push(p);
+    }
+  });
+  return players;
+}
+
+function setPlayersRoster(players){
+  if(!Array.isArray(players) || players.length === 0){
+    alert("No players found in the selected file.");
+    return;
+  }
+  PLAYERS = players.slice();
+  refreshRosterAfterLoad();
+
+  const hint = document.getElementById("playersLoadHint");
+  if(hint) hint.textContent = "Loaded " + PLAYERS.length + " players. Select today’s participants.";
+  showWizardStep(1);
+}
+
+function useSamplePlayers(){
+  const sample = Array.from({length:24}, function(_,i){ return "P" + (i+1); });
+  setPlayersRoster(sample);
+}
+
+function parsePlayersFromHtml(text){
+  const m = text.match(/(?:const|let)\s+PLAYERS\s*=\s*(\[[\s\S]*?\]);/);
+  if(!m) return null;
+  try{
+    const arr = JSON.parse(m[1]);
+    if(Array.isArray(arr)) return arr.filter(x => typeof x === "string");
+  }catch(e){}
+  return null;
+}
+
+function refreshRosterAfterLoad(){
+  buildChecks();
+  document.querySelectorAll("#playerChecks input").forEach(function(inp){
+    inp.checked = false;
+    inp.addEventListener("change", function(){
+      updatePlayerNumbers();
+      if(typeof updatePlayerCountSummary === "function") updatePlayerCountSummary();
+      showInitialPrompt();
+      wizardGenerated = false;
+      const next = document.getElementById("btnStep3TopNext");
+      if(next) next.disabled = true;
+    });
+  });
+  updatePlayerNumbers();
+  if(typeof updatePlayerCountSummary === "function") updatePlayerCountSummary();
+}
+
 function importHtmlState(text){
+  const loadedPlayers = parsePlayersFromHtml(text);
+  if(loadedPlayers && loadedPlayers.length){
+    PLAYERS = loadedPlayers;
+    refreshRosterAfterLoad();
+  }
+
   // Robustly find script tag with id=SCHEDULER_STATE
   const re = /<script[^>]*id=["']SCHEDULER_STATE["'][^>]*>([\s\S]*?)<\/script>/i;
   const m = text.match(re);
-  if(!m) throw new Error("No SCHEDULER_STATE found in the HTML.");
+
+  // Roster-only private file is valid.
+  if(!m){
+    if(loadedPlayers && loadedPlayers.length){
+      alert("Private roster loaded.");
+      return;
+    }
+    throw new Error("No PLAYERS roster or SCHEDULER_STATE found in the HTML.");
+  }
+
   const json = (m[1] || "").trim();
   const state = JSON.parse(json);
   if(!state || !Array.isArray(state.history)) throw new Error("Invalid state format.");
@@ -2475,37 +2556,6 @@ function escapeHtml(s){
     .replace(/"/g,"&quot;");
 }
 
-
-
-function buildRallyScoreUrl(matchNo, courtLabel, compact, numberMap){
-  if(!compact || compact.length < 4) return "";
-  const a = PLAYERS[compact[0]] || "";
-  const b = PLAYERS[compact[1]] || "";
-  const c = PLAYERS[compact[2]] || "";
-  const d = PLAYERS[compact[3]] || "";
-  if(!a || !b || !c || !d) return "";
-
-  const teamA = a + "-" + b;
-  const teamB = c + "-" + d;
-  const teamANo = (numberMap[a] || "") + "-" + (numberMap[b] || "");
-  const teamBNo = (numberMap[c] || "") + "-" + (numberMap[d] || "");
-
-  const base = "../RallyScore/index.html";
-  const params = new URLSearchParams();
-  params.set("match", String(matchNo));
-  if(courtLabel) params.set("court", String(courtLabel));
-  params.set("teamA", teamA);
-  params.set("teamANo", teamANo);
-  params.set("teamB", teamB);
-  params.set("teamBNo", teamBNo);
-  return base + "?" + params.toString();
-}
-
-function rallyOpenButtonHtml(url){
-  if(!url) return "";
-  return '<div class="rallyOpenWrap"><button type="button" class="rallyOpenBtn" data-rally-url="'+escapeHtml(url)+'">Open in RallyScore</button></div>';
-}
-
 function buildA4ExportHtml(){
   const scheduleEl = document.getElementById("schedule");
   if(!scheduleEl || !scheduleEl.querySelector("table")){
@@ -2602,6 +2652,9 @@ function buildA4ExportHtml(){
     + '.pairNum{font-size:19px;font-weight:900;white-space:nowrap;line-height:1.05}'
     + '.vs{font-size:9px;font-weight:900;color:#444;line-height:1.05}'
     + '.pairName{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:clip;color:#333;line-height:1.2;letter-spacing:-0.2px}'
+    + '.printBar{position:fixed;right:8mm;top:5mm;display:flex;gap:6px;z-index:9999}'
+    + '.printBar button{font-size:11px;padding:5px 9px;border:1px solid #999;border-radius:6px;background:#fff;color:#111;font-weight:800}'
+    + '@media print{.printBar{display:none}}'
     + 'body.courts-3 .pairName{font-size:10.8px;letter-spacing:-0.35px}'
     + 'body.courts-3 .pairNum{font-size:17px}'
     + 'body.courts-3 .vs{font-size:8px}'
@@ -2609,70 +2662,12 @@ function buildA4ExportHtml(){
     + 'body.courts-3 .courtBox{padding:6px 3px}'
     + 'body.courts-3 .courtsWrap,body.courts-3 .courtHeaderWrap{gap:3px}'
     + 'body.courts-3 .playerLine{font-size:16px}'
-    + '@media screen and (max-width:700px){'
-    + 'html,body{width:100%;max-width:100%;overflow-x:hidden}'
-    + 'body{font-size:10px}'
-    + '.page{width:100%;max-width:100%;overflow:hidden}'
-    + '.header{display:grid;grid-template-columns:96px minmax(0,1fr);gap:4px;align-items:end;margin-bottom:3px}'
-    + 'h1{font-size:13px;line-height:1.05}'
-    + '.info{font-size:6.5px;line-height:1.15;white-space:normal;overflow-wrap:anywhere}'
-    + '.layout{grid-template-columns:88px minmax(0,1fr);gap:4px}'
-    + '.players{max-width:none;padding:3px;border-radius:4px}'
-    + '.players h2{font-size:8px;margin:0 0 3px 0}'
-    + '.playerLine{grid-template-columns:15px minmax(0,1fr);gap:3px;font-size:10.5px;line-height:1.08;overflow:hidden}'
-    + '.pnum{text-align:right}'
-    + '.schedule{padding:3px;border-radius:4px;min-width:0;overflow:hidden}'
-    + '.schedule h2{font-size:8px;margin:0 0 2px 0}'
-    + '.courtHeaderRow{grid-template-columns:18px minmax(0,1fr);gap:3px}'
-    + '.courtHeaderWrap{gap:2px}'
-    + '.courtHead{font-size:8px;padding-left:1px}'
-    + '.matchRow{grid-template-columns:18px minmax(0,1fr);gap:3px;padding:7px 0}'
-    + '.matchNo{font-size:13px;padding-top:8px}'
-    + '.courtsWrap{gap:2px}'
-    + '.courtBox{padding:5px 2px;border-radius:4px;min-width:0}'
-    + '.courtGrid{grid-template-columns:minmax(0,1fr) 14px minmax(0,1fr);column-gap:1px}'
-    + '.pairNum{font-size:13px;letter-spacing:-0.5px;overflow:hidden;text-overflow:clip;min-width:0}'
-    + '.vs{font-size:7px}'
-    + '.pairName{font-size:7.5px;letter-spacing:-0.45px;min-width:0}'
-    + 'body.courts-3 .layout{grid-template-columns:74px minmax(0,1fr);gap:3px}'
-    + 'body.courts-3 .playerLine{font-size:8.8px;grid-template-columns:13px minmax(0,1fr);gap:2px}'
-    + 'body.courts-3 .players h2{font-size:7px}'
-    + 'body.courts-3 .courtGrid{grid-template-columns:minmax(0,1fr) 10px minmax(0,1fr);column-gap:1px}'
-    + 'body.courts-3 .pairNum{font-size:9.8px;letter-spacing:-0.7px}'
-    + 'body.courts-3 .pairName{font-size:6.2px;letter-spacing:-0.65px}'
-    + 'body.courts-3 .vs{font-size:6px}'
-    + 'body.courts-3 .courtBox{padding:4px 1px}'
-    + 'body.courts-3 .courtsWrap,body.courts-3 .courtHeaderWrap{gap:1px}'
-    + 'body.courts-3 .matchRow{grid-template-columns:16px minmax(0,1fr);gap:2px}'
-    + 'body.courts-3 .matchNo{font-size:11px}'
-    + '}'
     + '</style></head><body class="courts-'+courtCount+'"><div class="page">'
-    + '<div class="header"><h1>PairPlay Schedule</h1><div class="info">'+infoLine+'</div></div>'
+    + '<div class="printBar"><button onclick="window.print()">Print</button><button onclick="window.close()">Close</button></div><div class="header"><h1>PairPlay Schedule</h1><div class="info">'+infoLine+'</div></div>'
     + '<div class="layout"><aside class="players"><h2>Players ('+escapeHtml(String(selected.length))+')</h2><div class="playerGrid">'+playersHtml+'</div></aside>'
     + '<main class="schedule"><h2>Schedule</h2><div class="courtHeaderRow"><div></div><div class="courtHeaderWrap">'+courtHeaderHtml+'</div></div>'+scheduleRows+'</main></div>'
     + '</div></body></html>';
 }
-function openA4Modal(html){
-  const modal = document.getElementById("a4Modal");
-  const frame = document.getElementById("a4Frame");
-  if(!modal || !frame){ return; }
-  frame.srcdoc = html;
-  modal.classList.add("active");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-}
-
-function closeA4Modal(){
-  const modal = document.getElementById("a4Modal");
-  const frame = document.getElementById("a4Frame");
-  if(frame){ frame.srcdoc = ""; }
-  if(modal){
-    modal.classList.remove("active");
-    modal.setAttribute("aria-hidden", "true");
-  }
-  document.body.style.overflow = "";
-}
-
 function exportA4(){
   const scheduleEl = document.getElementById("schedule");
   if(!scheduleEl || !scheduleEl.querySelector("table")){
@@ -2680,7 +2675,12 @@ function exportA4(){
     return;
   }
   const html = buildA4ExportHtml();
-  openA4Modal(html);
+  const w = window.open("", "_blank");
+  if(!w){ alert("Popup blocked. Please allow popups for Export A4."); return; }
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  w.focus();
 }
 
 
@@ -2706,21 +2706,9 @@ const _btnCloseHelp = document.getElementById("btnCloseHelp");
 if(_btnCloseHelp){ _btnCloseHelp.addEventListener("click", closeHelp); }
 const _helpModal = document.getElementById("helpModal");
 if(_helpModal){ _helpModal.addEventListener("click", function(e){ if(e.target === _helpModal) closeHelp(); }); }
-document.addEventListener("keydown", function(e){ if(e.key === "Escape"){ closeHelp(); closeA4Modal(); } });
+document.addEventListener("keydown", function(e){ if(e.key === "Escape") closeHelp(); });
 const _btnExportA4 = document.getElementById("btnExportA4");
 if(_btnExportA4){ _btnExportA4.addEventListener("click", exportA4); }
-const _btnCloseA4Modal = document.getElementById("btnCloseA4Modal");
-if(_btnCloseA4Modal){ _btnCloseA4Modal.addEventListener("click", closeA4Modal); }
-const _a4Modal = document.getElementById("a4Modal");
-if(_a4Modal){ _a4Modal.addEventListener("click", function(e){ if(e.target === _a4Modal) closeA4Modal(); }); }
-
-
-document.addEventListener("click", function(e){
-  const btn = e.target && e.target.closest ? e.target.closest(".rallyOpenBtn") : null;
-  if(!btn) return;
-  const url = btn.getAttribute("data-rally-url");
-  if(url) window.open(url, "_blank");
-});
 
 showInitialPrompt();
 
@@ -2841,6 +2829,31 @@ function initWizard(){
   if(gen) gen.addEventListener("click", markWizardGenerated);
   const reroll = document.getElementById("btnReroll");
   if(reroll) reroll.addEventListener("click", markWizardGenerated);
+
+  const playersFile = document.getElementById("filePlayersLoad");
+  const playersLabel = document.getElementById("loadPlayersLabel");
+  if(playersLabel && playersFile){
+    playersFile.addEventListener("change", async function(ev){
+      const f = ev.target.files && ev.target.files[0];
+      if(!f) return;
+      try{
+        const text = await f.text();
+        let roster = parsePlayersFromText(text);
+        if(roster.length === 0){
+          const fromHtml = parsePlayersFromHtml(text);
+          if(fromHtml && fromHtml.length) roster = fromHtml;
+        }
+        setPlayersRoster(roster);
+      }catch(e){
+        alert("Load players failed: " + (e && e.message ? e.message : String(e)));
+      }finally{
+        playersFile.value = "";
+      }
+    });
+  }
+
+  const sampleBtn = document.getElementById("btnUseSamplePlayers");
+  if(sampleBtn) sampleBtn.addEventListener("click", useSamplePlayers);
 
   const all = document.getElementById("btnAll");
   if(all) all.addEventListener("click", function(){ setTimeout(updatePlayerCountSummary, 0); });
