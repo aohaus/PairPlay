@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PairPlay Studio Mockup | dechatgpt</title>
+
+<style>
+:root{
+  --bg:#08111f;
+  --panel:#0f1b2e;
+  --panel2:#111f35;
+  --ink:#edf4ff;
+  --muted:#8ea4bf;
+  --line:rgba(255,255,255,.10);
+  --accent:#39d98a;
+  --accent2:#7cc4ff;
+  --warn:#fbbf24;
+  --shadow:0 24px 70px rgba(0,0,0,.38);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,"Noto Sans JP",sans-serif;
+  background:
+    radial-gradient(circle at 18% -8%, rgba(57,217,138,.18), transparent 34%),
+    radial-gradient(circle at 86% 4%, rgba(124,196,255,.16), transparent 36%),
+    linear-gradient(180deg,#08111f 0%,#0a1424 52%,#070d18 100%);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+
+.page{
+  width:min(1180px,100%);
+  margin:0 auto;
+  padding:24px 18px 56px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:26px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+  color:var(--ink);
+  font-weight:850;
+  letter-spacing:-.035em;
+}
+
+.brand-mark{
+  width:32px;
+  height:32px;
+  border-radius:9px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 0 26px rgba(57,217,138,.25);
+}
+
+.brand small{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:750;
+  letter-spacing:.01em;
+  margin-top:-2px;
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:800;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 16px var(--accent);
+  animation:breathe 4.8s ease-in-out infinite;
+}
+
+@keyframes breathe{
+  0%,100%{opacity:.45;transform:scale(.85)}
+  50%{opacity:1;transform:scale(1.14)}
+}
+
+.hero{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:22px;
+  align-items:stretch;
+}
+
+.panel{
+  background:linear-gradient(180deg,rgba(17,31,53,.86),rgba(12,22,38,.86));
+  border:1px solid var(--line);
+  border-radius:34px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+.hero-main{
+  padding:34px;
+  min-height:360px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.kicker{
+  color:var(--accent);
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+h1{
+  margin:16px 0 0;
+  font-size:clamp(48px,7vw,88px);
+  line-height:.92;
+  letter-spacing:-.075em;
+  font-weight:900;
+}
+
+.lead{
+  margin:22px 0 0;
+  max-width:560px;
+  color:var(--muted);
+  font-size:19px;
+  line-height:1.55;
+  font-weight:650;
+  letter-spacing:-.02em;
+}
+
+.actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:30px;
+}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:0 18px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.06);
+  color:var(--ink);
+  font-weight:850;
+  text-decoration:none;
+}
+
+.btn.primary{
+  background:var(--accent);
+  color:#062314;
+  border-color:transparent;
+}
+
+.live-card{
+  padding:26px;
+  display:grid;
+  gap:16px;
+}
+
+.live-title{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.live-title h2{
+  margin:0;
+  font-size:26px;
+  line-height:1.05;
+  letter-spacing:-.05em;
+}
+
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  color:#d9ffe9;
+  background:rgba(57,217,138,.13);
+  border:1px solid rgba(57,217,138,.28);
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:12px;
+  font-weight:900;
+}
+
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.metric{
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:17px;
+  background:rgba(255,255,255,.035);
+}
+
+.metric .num{
+  font-size:36px;
+  font-weight:900;
+  line-height:1;
+  letter-spacing:-.055em;
+}
+
+.metric .label{
+  margin-top:7px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:750;
+}
+
+.memory{
+  border-radius:24px;
+  border:1px dashed rgba(124,196,255,.38);
+  padding:18px;
+  background:rgba(124,196,255,.07);
+}
+
+.memory .small{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.55;
+  margin-top:7px;
+}
+
+.section{
+  margin-top:24px;
+}
+
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:16px;
+  margin:0 0 14px;
+}
+
+.section-head h2{
+  margin:0;
+  font-size:30px;
+  line-height:1;
+  letter-spacing:-.055em;
+}
+
+.section-head p{
+  margin:0;
+  color:var(--muted);
+  font-weight:650;
+}
+
+.flow{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.step{
+  padding:22px;
+  min-height:178px;
+  position:relative;
+}
+
+.step-num{
+  color:var(--accent);
+  font-weight:950;
+  font-size:13px;
+  letter-spacing:.08em;
+}
+
+.step h3{
+  margin:16px 0 0;
+  font-size:28px;
+  line-height:1;
+  letter-spacing:-.055em;
+}
+
+.step p{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.45;
+  margin:12px 0 0;
+  font-weight:650;
+}
+
+.console{
+  display:grid;
+  grid-template-columns:360px 1fr;
+  gap:16px;
+  margin-top:24px;
+}
+
+.sidebar,.schedule{
+  padding:22px;
+}
+
+.card-title{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  margin-bottom:16px;
+}
+
+.card-title h3{
+  margin:0;
+  font-size:22px;
+  letter-spacing:-.045em;
+}
+
+.roster{
+  display:grid;
+  gap:8px;
+}
+
+.player{
+  display:grid;
+  grid-template-columns:32px 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(255,255,255,.035);
+  font-weight:800;
+}
+
+.player .idx{
+  color:var(--accent2);
+  font-variant-numeric:tabular-nums;
+}
+
+.player .tag{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.schedule-table{
+  display:grid;
+  gap:10px;
+}
+
+.match{
+  display:grid;
+  grid-template-columns:72px 1fr 1fr;
+  gap:10px;
+  align-items:stretch;
+}
+
+.match-no{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:rgba(255,255,255,.03);
+  font-weight:900;
+}
+
+.court{
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  background:rgba(255,255,255,.035);
+}
+
+.court-label{
+  color:var(--accent);
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:8px;
+}
+
+.pair{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-weight:850;
+  letter-spacing:-.02em;
+}
+
+.vs{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:900;
+  text-align:center;
+  margin:5px 0;
+}
+
+.ai-note{
+  margin-top:16px;
+  padding:16px;
+  border-radius:20px;
+  background:rgba(57,217,138,.08);
+  border:1px solid rgba(57,217,138,.20);
+  color:#d9ffe9;
+  font-weight:750;
+  line-height:1.5;
+}
+
+.bottom{
+  margin-top:26px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+}
+
+@media(max-width:900px){
+  .hero,.console{grid-template-columns:1fr}
+  .flow{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:560px){
+  .topbar{align-items:flex-start;flex-direction:column}
+  .hero-main{padding:26px}
+  .flow{grid-template-columns:1fr}
+  .metrics{grid-template-columns:1fr 1fr}
+  .match{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<main class="page">
+
+  <div class="topbar">
+    <a class="brand" href="/">
+      <div class="brand-mark"></div>
+      <div>
+        dechatgpt / PairPlay
+        <small>Studio Scheduler</small>
+      </div>
+    </a>
+
+    <div class="status">
+      <span class="dot"></span>
+      <span>Memory ready · English</span>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="panel hero-main">
+      <div>
+        <div class="kicker">Tournament Ops Console</div>
+        <h1>Build fair doubles. Fast.</h1>
+        <p class="lead">
+          PairPlay turns today’s roster into balanced badminton doubles matches.
+          Designed for live sessions, school clubs, and quick court operations.
+        </p>
+      </div>
+
+      <div class="actions">
+        <a class="btn primary" href="#">Start scheduling</a>
+        <a class="btn" href="#">Continue previous session</a>
+      </div>
+    </div>
+
+    <div class="panel live-card">
+      <div class="live-title">
+        <h2>Session snapshot</h2>
+        <div class="pill">● Live</div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="num">14</div>
+          <div class="label">players selected</div>
+        </div>
+        <div class="metric">
+          <div class="num">2</div>
+          <div class="label">courts active</div>
+        </div>
+        <div class="metric">
+          <div class="num">20</div>
+          <div class="label">matches planned</div>
+        </div>
+        <div class="metric">
+          <div class="num">Low</div>
+          <div class="label">repeat-pair risk</div>
+        </div>
+      </div>
+
+      <div class="memory">
+        <div class="kicker">Memory</div>
+        <div class="small">
+          Last setup can be restored from this device. Player roster, court count,
+          and recent schedules become part of Badminton Suite memory.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Session flow</h2>
+      <p>Same wizard, stronger operations feel.</p>
+    </div>
+
+    <div class="flow">
+      <div class="panel step">
+        <div class="step-num">01</div>
+        <h3>Roster</h3>
+        <p>Select today’s players or restore the previous group.</p>
+      </div>
+      <div class="panel step">
+        <div class="step-num">02</div>
+        <h3>Courts</h3>
+        <p>Set court count, match volume, and rest balance.</p>
+      </div>
+      <div class="panel step">
+        <div class="step-num">03</div>
+        <h3>Generate</h3>
+        <p>Create the schedule and review balance signals.</p>
+      </div>
+      <div class="panel step">
+        <div class="step-num">04</div>
+        <h3>Export</h3>
+        <p>Open in RallyScore, print A4, save, or share QR.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="console">
+    <div class="panel sidebar">
+      <div class="card-title">
+        <h3>Roster</h3>
+        <span class="pill">14 selected</span>
+      </div>
+
+      <div class="roster">
+        <div class="player"><span class="idx">01</span><span>Hayato</span><span class="tag">active</span></div>
+        <div class="player"><span class="idx">02</span><span>Taira</span><span class="tag">active</span></div>
+        <div class="player"><span class="idx">03</span><span>Outa</span><span class="tag">active</span></div>
+        <div class="player"><span class="idx">04</span><span>Renee</span><span class="tag">active</span></div>
+        <div class="player"><span class="idx">05</span><span>Player 5</span><span class="tag">active</span></div>
+      </div>
+    </div>
+
+    <div class="panel schedule">
+      <div class="card-title">
+        <h3>Generated schedule</h3>
+        <span class="pill">Balanced</span>
+      </div>
+
+      <div class="schedule-table">
+        <div class="match">
+          <div class="match-no">M1</div>
+          <div class="court">
+            <div class="court-label">Court 1</div>
+            <div class="pair"><span>01-04</span><span>Hayato-Renee</span></div>
+            <div class="vs">vs</div>
+            <div class="pair"><span>02-03</span><span>Taira-Outa</span></div>
+          </div>
+          <div class="court">
+            <div class="court-label">Court 2</div>
+            <div class="pair"><span>05-08</span><span>Player5-Player8</span></div>
+            <div class="vs">vs</div>
+            <div class="pair"><span>06-07</span><span>Player6-Player7</span></div>
+          </div>
+        </div>
+
+        <div class="match">
+          <div class="match-no">M2</div>
+          <div class="court">
+            <div class="court-label">Court 1</div>
+            <div class="pair"><span>01-02</span><span>Hayato-Taira</span></div>
+            <div class="vs">vs</div>
+            <div class="pair"><span>03-05</span><span>Outa-Player5</span></div>
+          </div>
+          <div class="court">
+            <div class="court-label">Court 2</div>
+            <div class="pair"><span>04-07</span><span>Renee-Player7</span></div>
+            <div class="vs">vs</div>
+            <div class="pair"><span>06-08</span><span>Player6-Player8</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-note">
+        Balance signal: rest rotation looks stable. No consecutive-rest warning in the first two matches.
+      </div>
+    </div>
+  </section>
+
+  <div class="bottom">
+    Mockup only · No scheduling logic changed · PairPlay Studio direction
+  </div>
+
+</main>
+</body>
+</html>
